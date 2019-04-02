@@ -1,0 +1,17 @@
+---
+layout: board
+javascript: "/public/assets/board.js"
+---
+
+{{ data.title }}
+---
+작성일자 : {{ data.regdate }}
+
+
+<form action="" method='POST'>
+    <input type="hidden" name="_method">
+    <input type="hidden" name="_id" value="{{data.id}}">
+    <button type="button" class="btn btn-secondary" id='board_list'>글목록</button>
+    <button type="butten" class="btn btn-primary float-right" id='board_update'>수정</button>
+    <button type="butten" class="btn btn-danger float-right" id='board_delete'>삭제</button>
+</form>
