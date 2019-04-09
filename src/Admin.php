@@ -10,14 +10,16 @@ class Admin
         $this->db = $db;
         
         $this->table = "board_info";
-        $this->board = new \Jiny\Board\Data($this->db);
-        $this->board->setBoard($this->table)->setField(['id','board','total']);     
-        $this->action = new \Jiny\Board\Action($this->board);
+        $this->data = new \Jiny\Board\Data($this->db);
+        $this->data->setBoard($this->table)->setField(['id','board','total']);
+
+        $this->action = new \Jiny\Board\Action($this->data);
+        $this->action->setBaseURI("/board/admin");
    
     }
 
     private $table;
-    private $board;
+    private $data;
     private $action;
 
     public function list()

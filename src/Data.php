@@ -1,4 +1,7 @@
 <?php
+/**
+ * 계시판용 데이터 처리 모듈
+ */
 
 namespace Jiny\Board;
 
@@ -161,7 +164,6 @@ class Data
             }
 
             $query = $this->db->table($this->name)->update($data)->id($id);
-            //exit;
             $query->exec();
             return $this;
         }

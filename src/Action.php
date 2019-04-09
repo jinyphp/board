@@ -5,11 +5,26 @@ namespace Jiny\Board;
 class Action
 {
     private $board;
+    private $baseURI;
+
+    private $enableView;
 
     public function __construct($board)
     {
         // 계시판 데이터처리 연결
         $this->board = $board;
+    }
+
+    public function setBaseURI($uri)
+    {
+        $this->baseURI = $uri;
+        return $this;
+    }
+
+    public function setView()
+    {
+        $this->enableView = true;
+        return $this;
     }
 
     private $linkKey;
@@ -81,7 +96,7 @@ class Action
             }
             
             $this->board->insert($data, $this->match);
-            header('Location: /board');
+            header('Location: '.$this->baseURI);
 
         }
 
@@ -101,8 +116,16 @@ class Action
     public function edit($id, $viewFile="board_edit")
     {
         if(\Jiny\Board\_method() == "PUT") {
+
             $this->board->update($id, $_POST);
-            header('Location: /board/'.$id);
+            if($this->enableView) {
+                // 뷰 모드로 이동합니다.
+                header('Location: '.$this->baseURI."/".$id);
+            } else {
+                // 목록으로 이동합니다.
+                header('Location: '.$this->baseURI);
+            }
+            
             return;
 
         } else {
@@ -119,7 +142,7 @@ class Action
     {
         if (\Jiny\Board\_method() == "DELETE") {
             $this->board->delete($id);
-            header('Location: /board');
+            header('Location: '.$this->baseURI);
         }
     }
 
