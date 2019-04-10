@@ -4,7 +4,7 @@ namespace Jiny\Board;
 
 class Action
 {
-    private $board;
+    private $data;
     private $baseURI;
 
     private $enableView;
@@ -12,7 +12,7 @@ class Action
     public function __construct($board)
     {
         // 계시판 데이터처리 연결
-        $this->board = $board;
+        $this->data = $board;
     }
 
     public function setBaseURI($uri)
@@ -41,9 +41,9 @@ class Action
      */
     public function list($viewFile="board")
     {
-        $this->board->setLimit();                           // 출력위치 지정
-        $count = $this->board->count();                     // 전체 글수
-        $rows = $this->board->load()->setLinks($this->linkKey, $this->linkHref)->get();    // 데이터처리
+        $this->data->setLimit();                           // 출력위치 지정
+        $count = $this->data->count();                     // 전체 글수
+        $rows = $this->data->load()->setLinks($this->linkKey, $this->linkHref)->get();    // 데이터처리
 
         
         $b = new \Jiny\Html\Bootstrap($this);   // 부트스트랩 테이블
@@ -57,8 +57,8 @@ class Action
             'list' => $list,
             'count' => $count,
             'pagenation' => $b->pagenation(
-                $this->board->pagenation(), 
-                $this->board->getLimit()
+                $this->data->pagenation(), 
+                $this->data->getLimit()
             ),
             'new' => $b->butten("Add", ['type'=>"btn-primary", 'id'=>"board_new", 'align'=>"right"])
         ];
@@ -95,7 +95,7 @@ class Action
                 $data[$key] = htmlspecialchars(strip_tags($value));
             }
             
-            $this->board->insert($data, $this->match);
+            $this->data->insert($data, $this->match);
             header('Location: '.$this->baseURI);
 
         }
@@ -106,7 +106,7 @@ class Action
     public function view($id, $viewFile="board_view")
     {
         // 읽기
-        if ($row = $this->board->read($id) ) {
+        if ($row = $this->data->read($id) ) {
             $viewData['menus'] = menu();
             $viewData['data'] = $row;
             return view($viewFile, $viewData);
@@ -117,7 +117,7 @@ class Action
     {
         if(\Jiny\Board\_method() == "PUT") {
 
-            $this->board->update($id, $_POST);
+            $this->data->update($id, $_POST);
             if($this->enableView) {
                 // 뷰 모드로 이동합니다.
                 header('Location: '.$this->baseURI."/".$id);
@@ -129,7 +129,7 @@ class Action
             return;
 
         } else {
-            if ($row = $this->board->read($id) ) {
+            if ($row = $this->data->read($id) ) {
                 $viewData['menus'] = menu();
                 $viewData['data'] = $row;
                 return view($viewFile, $viewData);
@@ -141,9 +141,13 @@ class Action
     public function delete($id)
     {
         if (\Jiny\Board\_method() == "DELETE") {
-            $this->board->delete($id);
+            $this->data->delete($id);
             header('Location: '.$this->baseURI);
         }
     }
+
+    /**
+     * 
+     */
 
 }
