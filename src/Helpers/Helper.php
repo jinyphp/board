@@ -37,6 +37,8 @@ if (! function_exists('_method')) {
                 return "DELETE";
             } else if(isset($_POST['_method']) &&  $_POST['_method'] == "PUT") {
                 return "PUT";
+            } else if(isset($_POST['_method']) &&  $_POST['_method'] == "GET") {
+                return "GET";
             } else {
                 return "POST";
             }
