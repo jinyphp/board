@@ -15,7 +15,7 @@ if (! function_exists('id')) {
         if(isset($_POST['_id'])) {
             $id = $_POST['_id'];
         } else {
-            $arr = array_reverse(conf("req")['uridata']);
+            $arr = array_reverse(\jiny\conf("req")['uridata']);
             if (isset($arr[0]) && is_numeric($arr[0])) {
                 $id = intval($arr[0]);
             } else {
