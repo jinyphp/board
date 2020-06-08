@@ -9,39 +9,52 @@
  */
 namespace Jiny\Board;
 
-if (! function_exists('id')) {
-    function id()
+// csrf 해쉬키 생성
+if (!function_exists("redirect")) {
+    function redirect($url)
     {
-        if(isset($_POST['_id'])) {
-            $id = $_POST['_id'];
-        } else {
-            $arr = array_reverse(\jiny\conf("req")['uridata']);
-            if (isset($arr[0]) && is_numeric($arr[0])) {
-                $id = intval($arr[0]);
-            } else {
-                $id = null;
-            }        
-        }        
-
-        return $id;
+        // post redirect get pattern
+        header("HTTP/1.1 301 Moved Permanently");
+        header("location:".$url);
     }
 }
 
-if (! function_exists('_method')) {
-    function _method()
+// csrf 해쉬키 생성
+if (!function_exists("csrf")) {
+    function csrf($salt, $algo="sha1")
     {
-        if ($_SERVER['REQUEST_METHOD'] == "GET") {
-            return "GET";
+        $csrf = \hash($algo,$salt.date("Y-m-d H:i:s"));
+        $_SESSION['_csrf'] = $csrf;
+        return $csrf;
+    }
+}
+
+// csrf 해쉬키 생성
+if (!function_exists("isCsrf")) {
+    function isCsrf()
+    {
+        if($_SESSION['_csrf'] == $_POST['csrf']) {
+            $_SESSION['_csrf'] = null;
+            return true;
         } else {
-            if (isset($_POST['_method']) && $_POST['_method'] == "DELETE") {
-                return "DELETE";
-            } else if(isset($_POST['_method']) &&  $_POST['_method'] == "PUT") {
-                return "PUT";
-            } else if(isset($_POST['_method']) &&  $_POST['_method'] == "GET") {
-                return "GET";
-            } else {
-                return "POST";
-            }
+            $_SESSION['_csrf'] = null;
+            return false;
         }
     }
 }
+
+if (!function_exists("postData")) {
+    function postData()
+    {
+        return $_POST['data'];
+    }
+}
+
+if (!function_exists("id")) {
+    function id()
+    {
+        return $_POST['data']['id'];
+    }
+}
+
+

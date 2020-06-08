@@ -1,7 +1,15 @@
 <?php
-
+/*
+ * This file is part of the jinyPHP package.
+ *
+ * (c) hojinlee <infohojin@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace Jiny\Board;
 
+// 페이지네이션 계산로직
 class Pagenation {
 
     public $num = 10;    // 한페이지의 리스트수
@@ -25,6 +33,10 @@ class Pagenation {
 
     public $page = [];
 
+    /**
+     * 페이지네이션 생성자
+     * 전체 갯수 초기화
+     */
     public function __construct($total)
     {
         $this->total = $total;
@@ -36,6 +48,7 @@ class Pagenation {
     public function setNum($num)
     {
         $this->num = $num;
+        return $this;
     }
 
     /**
@@ -44,6 +57,7 @@ class Pagenation {
     public function setBlock($block)
     {
         $this->block = $block;
+        return $this;
     }
 
 
@@ -63,7 +77,6 @@ class Pagenation {
     private function blocks()
     {
         $this->totalBlock = intval($this->totalList / $this->block );
-        //if ($this->totalList % $this->block) $this->totalBlock += 1;
         return $this;
     }
 
@@ -87,31 +100,10 @@ class Pagenation {
 
 
     public function __invoke($limit){
-
-		$this->lists(); // 전페 리스트 수
-        $this->blocks(); // 전체 블럭 수
-        $this->currentList($limit); // 현재 위치의 list 값 체크
-        $this->currentBlock();  // 현제 위치의 block값 체크
-
-        // 처음 데이터가 아닌경우, 처음으로 이동 버튼 생성.
-        $pageMenu .= $this->first($limit);
-        $pageMenu .= $this->prev();
-
-        // echo "현재블럭=".$this->current_block."/".$this->totalBlock."<br>";
-        // echo "현재리스트=".$this->current_list."/".$this->totalList."<br>";
-
-        $pageMenu .= $this->body($limit);
-
-        $pageMenu .= $this->next();
-        $pageMenu .= $this->last();
-        
-		return $pageMenu;
+        return $this->make($limit);
     }
 
-    /**
-     * 페이지네이션 계산 : 배열저장
-     */
-    public function pageArr($limit)
+    public function make($limit) : string
     {
         $this->lists(); // 전페 리스트 수
         $this->blocks(); // 전체 블럭 수
@@ -119,24 +111,23 @@ class Pagenation {
         $this->currentBlock();  // 현제 위치의 block값 체크
 
         // 처음 데이터가 아닌경우, 처음으로 이동 버튼 생성.
-        $this->first($limit);
-        $this->prev();
-
-        $this->body($limit);
-
-        $this->next();
-        $this->last();
-
-        return $this->page;
+        $pageMenu = "";
+        $pageMenu .= $this->first($limit);
+        $pageMenu .= $this->prev();
+        $pageMenu .= $this->pages($limit);
+        $pageMenu .= $this->next();
+        $pageMenu .= $this->last();
+        
+		return $pageMenu;
     }
+
 
     /**
      * 페이지 목록 계산
      */
-    private function body($limit)
+    private function pages($limit)
     {
         $str = "";
-
         if($this->current_block) $i = $this->current_block * $this->num +1; else $i = 1;
         
         $max = $i + $this->block -1;
@@ -145,13 +136,8 @@ class Pagenation {
         for(;$i<=$max; $i++){
             $j = ($i-1) * $this->num;
             if($limit >= $j && $limit < $j + $this->num){
-
                 $this->page[$i] = $j;
-				$str .= "
-                <span>
-                    <b>$i</b>
-                </span>";
-
+				$str .= "<span><b>$i</b></span>";
 			} else {
                 $this->page[$i] = $j;
                 $str .= $this->link($i, $j);
@@ -195,7 +181,6 @@ class Pagenation {
         $i = ($this->current_block +1) * $this->block +1;
         if ($i<=$this->totalList) {
             $j = ($i-1) * $this->num;
-
             $this->page['next'] = $j;
             return $this->link($this->title['next'], $j);
         }
@@ -209,7 +194,6 @@ class Pagenation {
         // 다음 블럭이 있는 경우, 표시
         $i = ($this->current_block +1) * $this->block +1;
         if ($i<=$this->totalList) {
-
             $j = ($this->totalList-1) * $this->num;
             $this->page['last'] = $j;
             return $this->link($this->title['last'], $j);
@@ -218,9 +202,34 @@ class Pagenation {
 
     private function link($title, $j)
     {
+        /*
         return "<span >
                     <a href='?limit=$j'>".$title."</a>
                 </span>";
+        */
+        return "<span >
+                    <a href='javascript:pagenation($j);'>".$title."</a>
+                </span>";
+    }
+
+    /**
+     * 페이지네이션 
+     * 배열저장
+     */
+    public function arr($limit)
+    {
+        $this->lists(); // 전페 리스트 수
+        $this->blocks(); // 전체 블럭 수
+        $this->currentList($limit); // 현재 위치의 list 값 체크
+        $this->currentBlock();  // 현제 위치의 block값 체크
+
+        $this->first($limit); // 처음 데이터가 아닌경우, 처음으로 이동 버튼 생성.
+        $this->prev();
+        $this->page($limit);
+        $this->next();
+        $this->last();
+
+        return $this->page;
     }
 
     /**
