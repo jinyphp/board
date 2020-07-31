@@ -44,6 +44,8 @@ class TableUpdate
             $update = $this->db->update($this->table,$data)->id($id);
 
             \jiny\board\redirect($this->conf['uri']);
+            // \jiny\board\redirect($_SERVER['HTTP_REFERER']);
+            
         }
 
         $msg = "update CSRF 불일치";

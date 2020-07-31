@@ -13,9 +13,25 @@ namespace jiny\board;
 if (!function_exists("redirect")) {
     function redirect($url)
     {
+        
+        header("Pragma: no-cache");  
+        header("Cache-Control: no-cache,must-revalidate"); 
+        
+
         // post redirect get pattern
         header("HTTP/1.1 301 Moved Permanently");
         header("location:".$url);
+
+        /*
+        <script>
+alert('전송을 완료 했습니다.');
+history.pushState(null, null, location.href);
+window.onpopstate = function(event) {
+    history.go(1);
+};
+</script>
+        */
+
     }
 }
 

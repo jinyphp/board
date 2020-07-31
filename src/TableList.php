@@ -39,25 +39,18 @@ class TableList
     public function main($limit=0)
     {
         // 검색
-        // print_r($_POST);
+        $rows = $this->select($limit);
+        $this->builder($rows);
 
-        // 전체 계시물 갯수판단
-        // $this->total = $this->db->select($this->table)->count();
-        // $this->pagenation->setTotal($this->total);
-        // $this->pagenation->setLimit($limit);
+        $vars = [
+            'total'=>$this->total
+        ];
+        return $this->resource($vars);
 
-        if ($rows = $this->select($limit)) {
-            $this->builder($rows);
-
-            $vars = [
-                'total'=>$this->total
-            ];
-            return $this->resource($vars);
-        } 
             
-        $msg = "데이터 목록을 읽어 올 수 없습니다.";
-        $error = new \App\Controllers\Members\Error($msg);
-        return $error->main();
+        // $msg = "데이터 목록을 읽어 올 수 없습니다.";
+        // $error = new \Jiny\Members\Error($msg);
+        // return $error->main();
     }
 
     /**
@@ -68,6 +61,7 @@ class TableList
         $html = \jiny\html\table($rows);
 
         $fields = $this->conf['list']['fields'];
+        
         $html->displayfield($fields)->theadTitle($fields);
 
         // 연결링크
@@ -88,6 +82,11 @@ class TableList
         $vars['field'] = "email";
         $vars['search'] = $this->searchValue();
 
+        if(isset($this->conf['list']['title'])) {
+            $vars['title'] = $this->conf['list']['title'];
+        }
+        
+
         $file = "..".$this->conf['list']['resource'];
         $body = \jiny\html_get_contents($file, $vars);
 
@@ -100,35 +99,24 @@ class TableList
     private function select($start)
     {
         // 데이터베이스 select 객체 생성
-        $db = $this->db->select($this->table);
+        $db = $this->db->select($this->table)->autoCreate()->autoField();
+        // exit;
 
         // 검색 조건
         $field = $this->searchField();
         $search = $this->searchValue();
         if( $field && $search) {
             $where = $field." like '%".$search."%' ";
-            // echo "<br>".$where."<br>";
             $db->where($where);
-            // echo $db->build()->getQuery();
-            // exit;
         }
 
-        // echo "조건 카운트 <br>";
-        //echo "<pre>";
-        //print_r($db);
-        //echo "</pre>";
         $this->total = $db->count();
         $this->pagenation->setTotal($this->total);
         $this->pagenation->setLimit($start);
-        //echo $this->total."<br>";
-
-        // exit;
 
         // 페이지네이션
         $display = $this->pagenation->num;
         $db->limit($display, $start); // pagenation limit 설정: 출력갯수, 시작위치
-        //echo $db->getTablename();
-        //echo "쿼리=".$db->build()->getQuery();
         $rows = $db->runAssocAll();
         return $rows;
     }

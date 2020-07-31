@@ -16,40 +16,25 @@ class TableParser
 {
     protected $conf;
     protected $http;
+    /*
     public function __construct($class)
     {
         // echo __CLASS__;
-        $this->init($class);
+        // $this->init($class);
     }
 
     protected function init($class)
     {
         $this->conf = \json_decode(\file_get_contents("..".DIRECTORY_SEPARATOR.$class.".json"), true);
+    }
+    */
+
+
+
+    public function main()
+    {
         $this->http = \jiny\http();
-    }
-
-    private function cookieInit()
-    {
-        if (!isset($_COOKIE['current'])) {
-            // setcookie("current", $this->conf->uri, time()+60*60, "/");
-            \jiny\cookie("current", $this->conf['uri']);
-            \jiny\cookie("limit", 0, -3600);
-            \jiny\cookie("search", "", -3600);
-            \jiny\cookie("type", "", -3600);
-        } else {
-            if ($_COOKIE['current'] != $this->conf['uri']) {
-                // setcookie("current", $this->conf->uri, time()+60*60, "/");
-                \jiny\cookie("current", $this->conf['uri']);
-                \jiny\cookie("limit", 0, -3600);
-                \jiny\cookie("search", "", -3600);
-                \jiny\cookie("type", "", -3600);
-            }
-        }
-    }
-
-    protected function main()
-    {
-       $this->cookieInit();
+        $this->cookieInit();
  
         //echo "회원관리";
         $method = $this->http->Request->method();
@@ -90,6 +75,25 @@ class TableParser
             $this->searchField()->searchValue(); // search 쿠키 설정
             $limit = $this->limit();            
             return $this->list($limit);
+        }
+    }
+
+    private function cookieInit()
+    {
+        if (!isset($_COOKIE['current'])) {
+            // setcookie("current", $this->conf->uri, time()+60*60, "/");
+            \jiny\cookie("current", $this->conf['uri']);
+            \jiny\cookie("limit", 0, -3600);
+            \jiny\cookie("search", "", -3600);
+            \jiny\cookie("type", "", -3600);
+        } else {
+            if ($_COOKIE['current'] != $this->conf['uri']) {
+                // setcookie("current", $this->conf->uri, time()+60*60, "/");
+                \jiny\cookie("current", $this->conf['uri']);
+                \jiny\cookie("limit", 0, -3600);
+                \jiny\cookie("search", "", -3600);
+                \jiny\cookie("type", "", -3600);
+            }
         }
     }
 
@@ -152,44 +156,32 @@ class TableParser
 
     protected function view($id)
     {
-        // $obj = new \App\Controllers\Board\TableView($this->conf);
-        // return $obj->main($id);
         return $this->factory("TableView")->main($id);
     }
 
     protected function edit()
     {
         $id = intval($_POST['id']);
-        //$obj = new \App\Controllers\Board\TableEdit($this->conf);
-        //return $obj->main($id);
         return $this->factory("TableEdit")->main($id);
     }
 
     protected function editup()
     {
-        // $obj = new \App\Controllers\Board\TableUpdate($this->conf);
-        // return $obj->main();
         return $this->factory("TableUpdate")->main();
     }
 
     protected function new()
     {
-        //$obj = new \App\Controllers\Board\TableNew($this->conf);
-        //return $obj->main();
         return $this->factory("TableNew")->main();
     }
 
     protected function newup()
     {
-        //$obj = new \App\Controllers\Board\TableInsert($this->conf);
-        //return $obj->main();
         return $this->factory("TableInsert")->main();        
     }
 
     protected function delete()
     {
-        //$obj = new \App\Controllers\Board\TableDelete($this->conf);
-        //return $obj->main();
         return $this->factory("TableDelete")->main(); 
     }
 }
