@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Jiny\Board;
+namespace jiny\board;
 
 // csrf 해쉬키 생성
 if (!function_exists("redirect")) {
@@ -19,6 +19,18 @@ if (!function_exists("redirect")) {
     }
 }
 
+// CSRF 객체생성
+if (!function_exists("csrf")) {
+    function csrf()
+    {
+        return \Jiny\Board\CSRF::instance();
+    }
+}
+
+
+
+
+/*
 // csrf 해쉬키 생성
 if (!function_exists("csrf")) {
     function csrf($salt, $algo="sha1")
@@ -56,5 +68,21 @@ if (!function_exists("id")) {
         return $_POST['data']['id'];
     }
 }
+*/
 
+////////////
 
+function pagenation($total = 0)
+{
+    $obj = \Jiny\Board\Pagenation::instance();
+    if ($total) $obj->setTotal($total);
+    return $obj;
+}
+
+namespace jiny\board\pagenation;
+
+function build($limit = 0)
+{
+    $obj = \Jiny\Board\Pagenation::instance();
+    return $obj->build($limit);
+}
