@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Jiny\Board;
+namespace Jiny\Board\State;
 
 /**
  * 테이블의 목록을 출력합니다.
@@ -18,6 +18,7 @@ class TableEdit
     private $parser;
     private $table;
     private $conf;
+
     public function __construct($conf)
     {
         // echo __CLASS__;
@@ -28,29 +29,38 @@ class TableEdit
         $this->table = $conf['table']; // 테이블명 설정"members";
     }
 
+    
+
     /**
      * 처리로직
      */
     public function main($id)
     {
-        if(is_numeric($id)) {
-            if ($bool = \jiny\board\csrf()->is()) {
-                if ($row = $this->read($id)) {
-                    $this->builder($row);
-                    return $this->resource(['data'=>$row]);
-                }
-                $msg = $id." 데이터를 읽어 처리할 수 없습니다.";
-    
-            }
-            $msg = "CSRF 불일치";            
-            
-        } else {
-            $msg = $id." 는 숫자로 입력되어야 합니다.";
-        }
-        
-        $error = new \App\Controllers\Members\Error($msg);
-        return $error->main();
+        return $this->POST($id);
     }
+
+    /**
+     * GET 방식으로 edit 요청시 처리
+     */
+    public function GET($id)
+    {
+        if ($this->isID($id)) {
+            $row = $this->read($id);
+            $this->builder($row);
+            return $this->resource(['data'=>$row]);   
+        }
+    }
+
+    public function POST($id)
+    {
+        if ($this->isID($id) && $this->isCSRF()) {
+            $row = $this->read($id);
+            $this->builder($row);
+            return $this->resource(['data'=>$row]); 
+        }
+    }
+
+
 
     /**
      * html 코드빌더
@@ -89,45 +99,40 @@ class TableEdit
      */
     private function read($id)
     {
-        return $this->db->select($this->table)->id($id);
+        if ($row = $this->db->select($this->table)->id($id)) {
+            return $row;
+        }
+    
+        $msg = $id." 데이터를 읽어 처리할 수 없습니다.";
+        return $this->error($msg);
+    }
+
+    private function error($msg)
+    {
+        $error = new \Jiny\App\Error($msg);
+        return $error->main();
+    }
+
+    private function isID($id)
+    {
+        if (is_numeric($id)) {
+            return true;
+        }
+        
+        $msg = $id." 는 숫자로 입력되어야 합니다.";
+        return $this->error($msg);
+    }
+
+    private function isCSRF()
+    {
+        if ($bool = \jiny\board\csrf()->is()) {
+            return true;
+        }
+        $msg = "CSRF 불일치"; 
+        return $this->error($msg);
     }
 
     /**
      * 
      */
-    /*
-    public function update()
-    {
-        // 수정
-        if (\jiny\board\csrf()->is()) {
-            \jiny\board\csrf()->clear();
-
-            // id 선택값
-            $id = isset($_POST['id'])?intval($_POST['id']) : 0;
-
-            // 데이터삽입
-            $data = \jiny\formData();
-
-            // --- 패스워드 처리 ---
-            if(isset($data['password']) && empty($data['password'])) {
-                // password가 비어있는 경우, update 항목 삭제
-                unset($data['password']);
-            } else {
-                // 패스워드 암호화
-                $PassWord = new \Jiny\Members\Password();
-                $data['password'] = $PassWord->encryption($data['password']);
-            }
-
-            $update = $this->db->update($this->table,$data)->id($id);
-
-            \jiny\board\redirect($this->conf['uri']);
-            
-        }
-
-        $msg = "update CSRF 불일치";
-        $error = new \App\Controllers\Members\Error($msg);
-        return $error->main();
-    }
-    */
-
 }

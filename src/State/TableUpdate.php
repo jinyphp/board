@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Jiny\Board;
+namespace Jiny\Board\State;
 
 /**
  * 테이블의 목록을 출력합니다.
@@ -43,9 +43,10 @@ class TableUpdate
             $data = $this->formData();
             $update = $this->db->update($this->table,$data)->id($id);
 
-            \jiny\board\redirect($this->conf['uri']);
-            // \jiny\board\redirect($_SERVER['HTTP_REFERER']);
-            
+            //echo "데이터 수정완료";
+            //exit;
+
+            \jiny\board\redirect($this->conf['uri']);            
         }
 
         $msg = "update CSRF 불일치";
@@ -68,15 +69,15 @@ class TableUpdate
             unset($data['password']);
         } else {
             // 패스워드 암호화
-            $PassWord = new \Jiny\Members\Password();
-            $data['password'] = $PassWord->encryption($data['password']);
+            $Encryption = new \Jiny\Members\Encryption();
+            $data['password'] = $Encryption->encryption($data['password']);
         }
         return $data;
     }
 
     private function error($msg)
     {
-        $error = new \App\Controllers\Members\Error($msg);
+        $error = new \Jiny\App\Error($msg);
         return $error->main();
     }
 

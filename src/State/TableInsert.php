@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Jiny\Board;
+namespace Jiny\Board\State;
 
 /**
  * 테이블의 목록을 출력합니다.
@@ -34,11 +34,18 @@ class TableInsert
     {
         if ($this->validate()) {
             //echo "유효성 패스";
-            $this->db->insert($this->table, $_POST['data'])->save();
-        }
+            //echo $this->table;
+            //print_r($_POST['data']);
+            $insert = $this->db->insert($this->table, $_POST['data']);
+            echo $insert->build()->getQuery();
+            $insert->save();
 
-        //echo "재입력 필요";
-        \jiny\board\redirect($this->conf['uri']);
+            \jiny\board\redirect($this->conf['uri']);
+        
+        } 
+        
+        $msg = "유효성 실패";
+        $this->error($msg);
     }
 
     // 유효성 검사
@@ -54,7 +61,7 @@ class TableInsert
 
     private function error($msg)
     {
-        $error = new \App\Controllers\Members\Error($msg);
+        $error = new \Jiny\App\Error($msg);
         return $error->main();
     }
 

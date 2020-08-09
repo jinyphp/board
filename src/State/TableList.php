@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Jiny\Board;
+namespace Jiny\Board\State;
 
 /**
  * 테이블의 목록을 출력합니다.
@@ -46,11 +46,6 @@ class TableList
             'total'=>$this->total
         ];
         return $this->resource($vars);
-
-            
-        // $msg = "데이터 목록을 읽어 올 수 없습니다.";
-        // $error = new \Jiny\Members\Error($msg);
-        // return $error->main();
     }
 
     /**
@@ -99,7 +94,7 @@ class TableList
     private function select($start)
     {
         // 데이터베이스 select 객체 생성
-        $db = $this->db->select($this->table)->autoCreate()->autoField();
+        $db = $this->db->select($this->table, array_keys($this->conf['list']['fields']))->autoCreate()->autoField();
         // exit;
 
         // 검색 조건
@@ -110,6 +105,9 @@ class TableList
             $db->where($where);
         }
 
+        //echo $db->build()->getQuery();
+        //$db->runAssocAll();
+        //exit;
         $this->total = $db->count();
         $this->pagenation->setTotal($this->total);
         $this->pagenation->setLimit($start);
@@ -117,6 +115,7 @@ class TableList
         // 페이지네이션
         $display = $this->pagenation->num;
         $db->limit($display, $start); // pagenation limit 설정: 출력갯수, 시작위치
+        $db->build()->getQuery(); // 이전 count 쿼리 삭제하고, 재빌드 합니다.
         $rows = $db->runAssocAll();
         return $rows;
     }
