@@ -12,7 +12,7 @@ namespace Jiny\Board\State;
 /**
  * 테이블의 목록을 출력합니다.
  */
-class TableNew
+class TableNew extends \Jiny\Board\State\Table
 {
     private $db;
     private $parser;
@@ -37,9 +37,21 @@ class TableNew
      */
     public function main()
     {
-        // return "신규삽입";
-        $this->builder();
-        return $this->resource($vars=[]);
+        return $this->GET();
+    }
+
+    // 신규삽입
+    // ~~/new
+    public function GET($id=0)
+    {
+        $this->builder(); // 폼양식 빌드
+        return $this->resource($vars=[]); // 화면 출력
+    }
+
+    public function POST($id=0)
+    {
+        $this->builder(); // 폼양식 빌드
+        return $this->resource($vars=[]); // 화면 출력
     }
 
     /**

@@ -10,9 +10,9 @@
 namespace Jiny\Board\State;
 
 /**
- * 테이블의 목록을 출력합니다.
+ * 테이블의 데이터를 삽입합니다.
  */
-class TableInsert
+class TableInsert extends \Jiny\Board\State\Table
 {
     private $db;
     private $parser;
@@ -21,7 +21,6 @@ class TableInsert
 
     public function __construct($conf)
     {
-        // echo __CLASS__;
         $dbinfo = \jiny\dbinfo();
         $this->db = \jiny\mysql($dbinfo);
 
@@ -33,19 +32,31 @@ class TableInsert
     public function main()
     {
         if ($this->validate()) {
-            //echo "유효성 패스";
-            //echo $this->table;
-            //print_r($_POST['data']);
             $insert = $this->db->insert($this->table, $_POST['data']);
-            echo $insert->build()->getQuery();
+            // echo 
+            $insert->build()->getQuery();
             $insert->save();
 
             \jiny\board\redirect($this->conf['uri']);
-        
         } 
         
         $msg = "유효성 실패";
-        $this->error($msg);
+        return $this->error($msg);
+    }
+
+    public function POST($id)
+    {
+        if ($this->validate()) {
+            $insert = $this->db->insert($this->table, $_POST['data']);
+            // echo 
+            $insert->build()->getQuery();
+            $insert->save();
+
+            \jiny\board\redirect($this->conf['uri']);
+        } 
+        
+        $msg = "유효성 실패";
+        return $this->error($msg);
     }
 
     // 유효성 검사

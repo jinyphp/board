@@ -12,7 +12,7 @@ namespace Jiny\Board\State;
 /**
  * 테이블의 목록을 출력합니다.
  */
-class TableList
+class TableList extends \Jiny\Board\State\Table
 {
     private $db;
     private $parser;
@@ -36,7 +36,24 @@ class TableList
      * 처리로직
      */
     private $total;
-    public function main($limit=0)
+    public function main($limit=null)
+    {
+        return $this->api($limit);
+    }
+
+    public function GET($limit=null)
+    {
+        return $this->api($limit);
+    }
+
+    public function POST($limit=null)
+    {
+        return $this->api($limit);
+    }
+
+
+
+    public function api($limit=null)
     {
         // 검색
         $rows = $this->select($limit);

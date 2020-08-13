@@ -12,15 +12,15 @@ namespace Jiny\Board\State;
 /**
  * 테이블의 목록을 출력합니다.
  */
-class TableUpdate
+class TableUpdate extends \Jiny\Board\State\Table
 {
     private $db;
     private $parser;
     private $table;
     private $conf;
+
     public function __construct($conf)
     {
-        // echo __CLASS__;
         $dbinfo = \jiny\dbinfo();
         $this->db = \jiny\mysql($dbinfo);
 
@@ -28,37 +28,53 @@ class TableUpdate
         $this->table = $conf['table']; // 테이블명 설정"members";
     }
 
-    
-    /**
-     * 
-     */
     public function main()
     {
-        // 수정
+        return $this->post();
+    }
+
+    /**
+     * post 처리루틴 "application/x-www-form-urlencoded"
+     * 처리후 redirection
+     */
+    public function post()
+    {
+        if ($this->put()) {
+            // 성공후 페이지 리다이렉션
+            \jiny\board\redirect($this->conf['uri']);
+        }
+        $msg = "update CSRF 불일치";
+        return $this->error($msg);
+    }
+
+    /**
+     * application/json
+     * 데이터를 갱신합니다.
+     */
+    public function put()
+    {
         if (\jiny\board\csrf()->is()) {
             \jiny\board\csrf()->clear();
 
-            // id 선택값
-            $id = $this->id();
+            $id = $this->id(); // id 선택값
             $data = $this->formData();
             $update = $this->db->update($this->table,$data)->id($id);
-
-            //echo "데이터 수정완료";
-            //exit;
-
-            \jiny\board\redirect($this->conf['uri']);            
+            
+            return true;        
         }
-
-        $msg = "update CSRF 불일치";
-        return $this->error($msg);
-        
     }
 
+    /**
+     * id 유효성 체크
+     */
     private function id()
     {
         return isset($_POST['id']) ? intval($_POST['id']) : 0;
     }
 
+    /**
+     * 테이터 읽기
+     */
     private function formData()
     {
         $data = \jiny\formData();
@@ -75,6 +91,9 @@ class TableUpdate
         return $data;
     }
 
+    /**
+     * 에러출력
+     */
     private function error($msg)
     {
         $error = new \Jiny\App\Error($msg);

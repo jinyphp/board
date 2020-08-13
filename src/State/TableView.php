@@ -12,7 +12,7 @@ namespace Jiny\Board\State;
 /**
  * 테이블의 목록을 출력합니다.
  */
-class TableView
+class TableView extends \Jiny\Board\State\Table
 {
     private $db;
     private $parser;
@@ -35,6 +35,11 @@ class TableView
      */
     public function main($id)
     {
+        return $this->GET($id);
+    }
+
+    public function GET($id)
+    {
         if(is_numeric($id)) {
             if ($row = $this->read($id)) {
                 $this->builder($row);
@@ -45,7 +50,7 @@ class TableView
             $msg = $id." 는 숫자로 입력되어야 합니다.";
         }
         
-        $error = new \App\Controllers\Members\Error($msg);
+        $error = new \Jiny\App\Error($msg);
         return $error->main();
     }
 

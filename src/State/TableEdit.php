@@ -12,7 +12,7 @@ namespace Jiny\Board\State;
 /**
  * 테이블의 목록을 출력합니다.
  */
-class TableEdit
+class TableEdit extends \Jiny\Board\State\Table
 {
     private $db;
     private $parser;
@@ -29,8 +29,6 @@ class TableEdit
         $this->table = $conf['table']; // 테이블명 설정"members";
     }
 
-    
-
     /**
      * 처리로직
      */
@@ -41,13 +39,14 @@ class TableEdit
 
     /**
      * GET 방식으로 edit 요청시 처리
+     * ~~/edit/id
      */
     public function GET($id)
     {
-        if ($this->isID($id)) {
-            $row = $this->read($id);
-            $this->builder($row);
-            return $this->resource(['data'=>$row]);   
+        if ($this->isID($id)) {         //id 유효성
+            $row = $this->read($id);    // db데이터 읽기
+            $this->builder($row);       // form 입력기 생성
+            return $this->resource(['data'=>$row]);   // 리소스 결합하여 화면 반환
         }
     }
 
@@ -59,6 +58,28 @@ class TableEdit
             return $this->resource(['data'=>$row]); 
         }
     }
+
+    public function api($id)
+    {
+        if ($this->isID($id)) {
+            $row = $this->read($id);
+            // print_r($row);
+            $this->builder($row);
+            return $this->resource(['data'=>$row]); 
+        }
+    }
+
+    /*
+    public function PUT($id)
+    {
+        if ($this->isID($id) && $this->isCSRF()) {
+            $row = $this->read($id);
+            $this->builder($row);
+            return $this->resource(['data'=>$row]); 
+        }
+    }
+    */
+
 
 
 

@@ -7,16 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Jiny\Board;
+namespace Jiny\Board\State;
 
-/**
- * 테이블 상태 파서
- */
-class Parser extends State
+abstract class Table
 {
-   
 
-    /**
-     * 
-     */
+
 }
