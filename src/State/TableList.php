@@ -18,11 +18,10 @@ class TableList extends \Jiny\Board\State\Table
     private $parser;
     private $table;
     private $conf;
-
     private $pagenation;
+
     public function __construct($conf=null)
     {
-        // echo __CLASS__;
         $dbinfo = \jiny\dbinfo();
         $this->db = \jiny\mysql($dbinfo);
 
@@ -38,8 +37,6 @@ class TableList extends \Jiny\Board\State\Table
     private $total;
     public function main($limit=null)
     {
-        // 검색
-        //echo "일반요청";
         $rows = $this->select($limit); // 데이터 조회
         $this->builder($rows);
 
@@ -55,8 +52,6 @@ class TableList extends \Jiny\Board\State\Table
      */
     public function GET($limit=null)
     {
-        //echo "GET 요청";
-        // 검색
         $rows = $this->select($limit);
         $this->builder($rows);
 
@@ -113,7 +108,6 @@ class TableList extends \Jiny\Board\State\Table
     {
         // 데이터베이스 select 객체 생성
         $db = $this->db->select($this->table, array_keys($this->conf['list']['fields']))->autoCreate()->autoField();
-        // exit;
 
         // 검색 조건
         $field = $this->searchField();
@@ -123,9 +117,6 @@ class TableList extends \Jiny\Board\State\Table
             $db->where($where);
         }
 
-        //echo $db->build()->getQuery();
-        //$db->runAssocAll();
-        //exit;
         $this->total = $db->count();
         $this->pagenation->setTotal($this->total);
         $this->pagenation->setLimit($start);
@@ -141,11 +132,8 @@ class TableList extends \Jiny\Board\State\Table
     private function searchField()
     {
         if(isset($_POST['field']) && $_POST['field']) {
-            
-            // echo "post-field";
             return $_POST['field'];
         } else if(isset($_COOKIE['field']) && $_COOKIE['field']) {
-            //echo "cookie-field=".$_COOKIE['field'];;
             return $_COOKIE['field'];
         }
         return "";
@@ -154,11 +142,11 @@ class TableList extends \Jiny\Board\State\Table
     private function searchValue()
     {
         if(isset($_POST['search'])) {
-            //  && $_POST['search']
             return $_POST['search'];
         } else if(isset($_COOKIE['search']) && $_COOKIE['search']) {
             return $_COOKIE['search'];
         }
         return "";
     }
+    
 }

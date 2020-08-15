@@ -10,7 +10,7 @@
 namespace Jiny\Board\State;
 
 /**
- * 테이블의 목록을 출력합니다.
+ * 데이터를 갱신합니다.
  */
 class TableUpdate extends \Jiny\Board\State\Table
 {
@@ -30,8 +30,6 @@ class TableUpdate extends \Jiny\Board\State\Table
 
     public function main()
     {
-        //echo __METHOD__;
-        // exit;
         if (\jiny\board\csrf()->is()) {
             \jiny\board\csrf()->clear();
 
@@ -54,9 +52,6 @@ class TableUpdate extends \Jiny\Board\State\Table
      */
     public function POST($body)
     {
-        //echo __METHOD__;
-        //exit;
-
         if ($this->put()) {
             // 성공후 페이지 리다이렉션
             \jiny\board\redirect($this->conf['uri']);
@@ -71,7 +66,6 @@ class TableUpdate extends \Jiny\Board\State\Table
      */
     public function PUT()
     {
-        // echo __METHOD__;
         if (\jiny\board\csrf()->is()) {
             \jiny\board\csrf()->clear();
 
@@ -110,13 +104,5 @@ class TableUpdate extends \Jiny\Board\State\Table
         return $data;
     }
 
-    /**
-     * 에러출력
-     */
-    private function error($msg)
-    {
-        $error = new \Jiny\App\Error($msg);
-        return $error->main();
-    }
 
 }

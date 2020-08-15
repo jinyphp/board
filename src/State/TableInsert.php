@@ -28,12 +28,10 @@ class TableInsert extends \Jiny\Board\State\Table
         $this->table = $conf['table']; // 테이블명 설정"members";
     }
 
-
     public function main()
     {
         if ($this->validate()) {
             $insert = $this->db->insert($this->table, $_POST['data']);
-            // echo 
             $insert->build()->getQuery();
             $insert->save();
 
@@ -80,10 +78,6 @@ class TableInsert extends \Jiny\Board\State\Table
         return $validate->isPass();
     }
 
-    private function error($msg)
-    {
-        $error = new \Jiny\App\Error($msg);
-        return $error->main();
-    }
+
 
 }

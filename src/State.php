@@ -14,19 +14,8 @@ namespace Jiny\Board;
  */
 class State
 {
-    protected $conf;
-    protected $http;
-
     // protected $scriptfile = "../resource/board/board.js";
     protected $scriptfile = "../vendor/jiny/board/src/board.js";
-
-    /**
-     * 상태처리 설정파일
-     */
-    public function setConf($conf)
-    {
-        $this->conf = $conf;
-    }
 
     /**
      * 계시판 
@@ -52,6 +41,8 @@ class State
         $limit = $this->limit();
         
         // 일반 리스트 출력
+        return $this->list();
+        /*
         $method = "_list";
         $stateObj = $this->$method();
 
@@ -61,6 +52,7 @@ class State
         } else {
             return $stateObj->main();
         }
+        */
 
     }
 
@@ -140,7 +132,6 @@ class State
         return $this;
     }
 
-
     /**
      * 상태객체를 생성하고 호출 합니다.
      */
@@ -150,136 +141,112 @@ class State
         return new $name ($this->conf);
     }
 
-    public function _list()
-    {
-        return $this->factory("TableList");
-    }
     public function list($limit=null)
     {
-        $obj = $this->factory("TableList");
+        $stateObj = $this->factory("TableList");
         $contenttype = $this->http->Request->contentType();
         if($contenttype == "application/json") {
             $method = \jiny\http\request()->method();
-            if(\method_exists($obj, $method)) {
+            if(\method_exists($stateObj, $method)) {
                 $limit = $this->limit($_SERVER['HTTP_LIMIT']);
-                return $obj->$method($limit);
+                return $stateObj->$method($limit);
             }
-        } else {
-            $limit = $this->limit();
-            return $obj->main($limit);
-        } 
+        }
+        
+        $limit = $this->limit();
+        return $stateObj->main($limit);
     }
 
     public function view($id=null)
     {
-        /*
-        $method = \jiny\http\request()->method();
-        $obj = $this->factory("TableView");
-        if(\method_exists($obj, $method)) {
-            return $obj->$method($id);
-        }
-        */
-        $obj = $this->factory("TableView");
+        $stateObj = $this->factory("TableView");
         $contenttype = $this->http->Request->contentType();
         if($contenttype == "application/json") {
             $method = \jiny\http\request()->method();
-            if(\method_exists($obj, $method)) {
+            if(\method_exists($stateObj, $method)) {
                 $id = $_SERVER['HTTP_ID'];
-                return $obj->$method($id);
+                return $stateObj->$method($id);
             }
-        } else {
-            $limit = $this->limit();
-            return $obj->main($id);
-        } 
+        }
+
+        // $limit = $this->limit();
+        return $stateObj->main($id); 
     }
 
 
     public function edit($id=null)
     {
-        /*
-        $method = \jiny\http\request()->method();
-        if(!$id) $id = intval($_POST['id']);
-        $obj = $this->factory("TableEdit");
-        if(\method_exists($obj, $method)) {
-            return $obj->$method($id);
-        }
-        */
-        $obj = $this->factory("TableEdit");
+        $stateObj = $this->factory("TableEdit");
         $contenttype = $this->http->Request->contentType();
         if($contenttype == "application/json") {
             $method = \jiny\http\request()->method();
-            if(\method_exists($obj, $method)) {
+            if(\method_exists($stateObj, $method)) {
                 $id = $_SERVER['HTTP_ID'];
-                return $obj->$method($id);
+                return $stateObj->$method($id);
             }
-        } else {
-            if(!$id) $id = intval($_POST['id']);
-            return $obj->main($id);
-        } 
+        }
+        
+        if(!$id) $id = intval($_POST['id']);
+        return $stateObj->main($id);
     }
 
-    public function _editup()
-    {
-        return $this->factory("TableUpdate");
-    }
     public function editup($id=null)
     {
         $stateObj = $this->factory("TableUpdate");
-        $method = \jiny\http\request()->method();
-        if(\method_exists($stateObj, $method)) {
-            return $stateObj->$method($id);
+        $contenttype = $this->http->Request->contentType();
+        if($contenttype == "application/json") {
+            $method = \jiny\http\request()->method();
+            if(\method_exists($stateObj, $method)) {
+                return $stateObj->$method($id);
+            }
         }
+
+        return $stateObj->main($id);
     }
 
 
     public function new($id=null)
     {
-        /*
-        $method = \jiny\http\request()->method();
-        $obj = $this->factory("TableNew");
-        if(\method_exists($obj, $method)) {
-            return $obj->$method($id);
-        }
-        */
-        $obj = $this->factory("TableNew");
+        $stateObj = $this->factory("TableNew");
         $contenttype = $this->http->Request->contentType();
         if($contenttype == "application/json") {
             $method = \jiny\http\request()->method();
-            if(\method_exists($obj, $method)) {
-                return $obj->$method($id);
+            if(\method_exists($stateObj, $method)) {
+                return $stateObj->$method($id);
             }
-        } else {
-            return $obj->main($id);
-        } 
-    }
-
-    public function _newup()
-    {
-        return $this->factory("TableInsert");
+        }
+        
+        return $stateObj->main($id);
     }
 
     public function newup($id=null)
     {
-        // echo $id;
-        $method = \jiny\http\request()->method();
-        $obj = $this->factory("TableInsert");
-        if(\method_exists($obj, $method)) {
-            return $obj->$method($id);
+        $stateObj = $this->factory("TableInsert");
+        $contenttype = $this->http->Request->contentType();
+        if($contenttype == "application/json") {
+            $method = \jiny\http\request()->method();
+            if(\method_exists($stateObj, $method)) {
+                return $stateObj->$method($id);
+            }
         }
+
+        return $stateObj->main($id);
     }
 
-    public function _destroy()
+    public function remove($id)
     {
-        return $this->factory("TableDelete");
+        $stateObj = $this->factory("TableDelete");
+        $contenttype = $this->http->Request->contentType();
+        if($contenttype == "application/json") {
+            $method = \jiny\http\request()->method();
+            if(\method_exists($stateObj, $method)) {
+                return $stateObj->$method($id);
+            }
+        }
+        
+        return $stateObj->main($id);     
     }
 
-    public function destroy($id)
-    {
-        $obj = $this->factory("TableDelete");
-        $method = \jiny\http\request()->method();
-        if(\method_exists($obj, $method)) {
-            return $obj->$method($id);
-        }
-    }
+    
 
 }

@@ -10,7 +10,7 @@
 namespace Jiny\Board\State;
 
 /**
- * 테이블의 목록을 출력합니다.
+ * 선택한 계시물을 출력합니다.
  */
 class TableView extends \Jiny\Board\State\Table
 {
@@ -18,14 +18,13 @@ class TableView extends \Jiny\Board\State\Table
     private $parser;
     private $table;
     private $conf;
+
     public function __construct($conf=null)
     {
-        //echo __CLASS__;
         $dbinfo = \jiny\dbinfo();
         $this->db = \jiny\mysql($dbinfo);
 
         if ($conf) $this->conf = $conf;
-
         $this->table = $conf['table']; // 테이블명 설정"members";
         $this->csrf = "hello";
     }
@@ -35,7 +34,6 @@ class TableView extends \Jiny\Board\State\Table
      */
     public function main($id)
     {
-        //echo "view 일반요청";
         if(is_numeric($id)) {
             if ($row = $this->read($id)) {
                 $this->builder($row);
@@ -46,13 +44,11 @@ class TableView extends \Jiny\Board\State\Table
             $msg = $id." 는 숫자로 입력되어야 합니다.";
         }
         
-        $error = new \Jiny\App\Error($msg);
-        return $error->main();
+        return $this->error($msg);
     }
 
     public function GET($id)
     {
-        //echo "view GET요청";
         if(is_numeric($id)) {
             if ($row = $this->read($id)) {
                 $this->builder($row);

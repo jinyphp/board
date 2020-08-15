@@ -10,7 +10,7 @@
 namespace Jiny\Board\State;
 
 /**
- * 테이블의 목록을 출력합니다.
+ * 데이터를 수정하는 입력폼을 생성합니다.
  */
 class TableEdit extends \Jiny\Board\State\Table
 {
@@ -21,7 +21,6 @@ class TableEdit extends \Jiny\Board\State\Table
 
     public function __construct($conf)
     {
-        // echo __CLASS__;
         $dbinfo = \jiny\dbinfo();
         $this->db = \jiny\mysql($dbinfo);
 
@@ -73,20 +72,6 @@ class TableEdit extends \Jiny\Board\State\Table
         }
     }
 
-    /*
-    public function PUT($id)
-    {
-        if ($this->isID($id) && $this->isCSRF()) {
-            $row = $this->read($id);
-            $this->builder($row);
-            return $this->resource(['data'=>$row]); 
-        }
-    }
-    */
-
-
-
-
     /**
      * html 코드빌더
      */
@@ -130,12 +115,6 @@ class TableEdit extends \Jiny\Board\State\Table
     
         $msg = $id." 데이터를 읽어 처리할 수 없습니다.";
         return $this->error($msg);
-    }
-
-    private function error($msg)
-    {
-        $error = new \Jiny\App\Error($msg);
-        return $error->main();
     }
 
     private function isID($id)

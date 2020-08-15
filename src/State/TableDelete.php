@@ -26,7 +26,6 @@ class TableDelete extends \Jiny\Board\State\Table
         if ($conf) $this->conf = $conf;
 
         $this->table = $conf['table']; // 테이블명 설정"members";
-        //$this->url = $conf['uri'];
     }
 
     /**
@@ -48,8 +47,7 @@ class TableDelete extends \Jiny\Board\State\Table
         }
 
         $msg = "삭제할 id가 선택되지 안았습니다.";
-        $error = new \Jiny\App\Error($msg);
-        return $error->main();
+        return $this->error($msg);
     }
 
     /**
@@ -69,8 +67,7 @@ class TableDelete extends \Jiny\Board\State\Table
         }
 
         // 오류화면 출력
-        $error = new \Jiny\App\Error($msg);
-        return $error->main();
+        return $this->error($msg);
     }
 
     /**
@@ -114,7 +111,6 @@ class TableDelete extends \Jiny\Board\State\Table
     private function dataDelete($id)
     {
         $this->db->delete($this->table)->id($id);
-        //echo "데이터 삭제완료";
     }
 
     /**

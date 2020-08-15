@@ -11,6 +11,10 @@ namespace Jiny\Board\State;
 
 abstract class Table
 {
-
+    protected function error($msg)
+    {
+        $error = new \Jiny\App\Error($msg);
+        return $error->main();
+    }
 
 }

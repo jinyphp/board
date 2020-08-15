@@ -191,15 +191,12 @@ function setBtnBoard_delete()
     btnDelete = document.querySelector("#btn-board-delete");
     if (btnDelete) {
         btnDelete.addEventListener('click', api_delete );
-
-        // application/json
-        // delete method
         function api_delete(e){
-
+            e.preventDefault();
             let formId = document.querySelector("input[name=id]");
             let formCSRF = document.querySelector("input[name=csrf]");
             let data = { 
-                mode: 'destroy',
+                mode: 'remove',
                 id: formId.value,
                 csrf: formCSRF.value
             };
@@ -234,7 +231,7 @@ function setBtnBoard_deletePost()
             var formId = document.querySelector("input[name=id]");
             var formCSRF = document.querySelector("input[name=csrf]");
             var data = { 
-                mode: 'destroy',
+                mode: 'remove',
                 id: formId.value,
                 csrf: formCSRF.value
             };
