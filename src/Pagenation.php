@@ -28,8 +28,7 @@ class Pagenation {
     public static function instance($args=null)
     {
         if (!isset(self::$_instance)) {        
-            //echo "객체생성\n";
-            // print_r($args);   
+            //echo "객체생성\n"; 
             self::$_instance = new self($args); // 인스턴스 생성
             if (method_exists(self::$_instance,"init")) {
                 self::$_instance->init();
@@ -42,7 +41,7 @@ class Pagenation {
     }
 
     public $num = 10;    // 한페이지의 리스트수
-    
+
     public $block = 10;  // 페이지 블럭 크기
 
     private $_limit=1;  // 현재의 위치

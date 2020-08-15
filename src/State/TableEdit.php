@@ -34,7 +34,11 @@ class TableEdit extends \Jiny\Board\State\Table
      */
     public function main($id)
     {
-        return $this->POST($id);
+        if ($this->isID($id)) {         //id 유효성
+            $row = $this->read($id);    // db데이터 읽기
+            $this->builder($row);       // form 입력기 생성
+            return $this->resource(['data'=>$row]);   // 리소스 결합하여 화면 반환
+        }
     }
 
     /**

@@ -10,7 +10,8 @@
 namespace Jiny\Board\State;
 
 /**
- * 테이블의 목록을 출력합니다.
+ * 계시물을 삭제 합니다.
+ * POST, DELETE 응답
  */
 class TableDelete extends \Jiny\Board\State\Table
 {
@@ -19,7 +20,6 @@ class TableDelete extends \Jiny\Board\State\Table
     private $table;
     public function __construct($conf)
     {
-        // echo __CLASS__;
         $dbinfo = \jiny\dbinfo();
         $this->db = \jiny\mysql($dbinfo);
 
@@ -30,7 +30,7 @@ class TableDelete extends \Jiny\Board\State\Table
     }
 
     /**
-     * 처리로직
+     * 처리로직 Submit
      */
     public function main()
     {
@@ -39,10 +39,8 @@ class TableDelete extends \Jiny\Board\State\Table
             if(is_numeric($id)) {
                 if (\jiny\board\csrf()->is()) {
                     \jiny\board\csrf()->clear();
-                    $this->byDelete($id);
-
-                    // exit;
-                    \jiny\board\redirect($this->conf['uri']);
+                    $this->dataDelete($id); // 삭제
+                    \jiny\board\redirect($this->conf['uri']); // 리다이렉션
                 }
                 $msg = "CSRF 불일치";
             }
@@ -54,32 +52,48 @@ class TableDelete extends \Jiny\Board\State\Table
         return $error->main();
     }
 
+    /**
+     * 메소드 응답: POST
+     * 오류출력 포함
+     */
     public function POST($body)
     {
-        //print_r($body);
-        //echo "를 삭제합니다.";
-        if ($this->isID($body->id)) {
-            // echo $body->csrf;
-            // exit;
+        if ($msg = $this->isID($body->id)) {
             if ( $body->csrf == $_SESSION['_csrf'] ) {
                 \jiny\board\csrf()->clear();
-                $this->byDelete($body->id);
-
-                exit;
-                \jiny\board\redirect($this->conf['uri']);
+                $this->dataDelete($body->id);
+                $msg = $body->id."가 정상적으로 삭제되었습니다.";
+                return \json_encode(['code'=>'200','message'=>$msg]);
             }
             $msg = "CSRF 불일치";
-            echo $msg;
-        }        
+        }
+
+        // 오류화면 출력
+        $error = new \Jiny\App\Error($msg);
+        return $error->main();
     }
 
-    public function delete()
+    /**
+     * 메소드 응답: DELETE
+     */
+    public function DELETE($body)
     {
-        echo __METHOD__."삭제!!";
-        exit;
+        if ($msg = $this->isID($body->id)) {
+            if ( $body->csrf == $_SESSION['_csrf'] ) {
+                \jiny\board\csrf()->clear();
+                $this->dataDelete($body->id);
+                $msg = $body->id."가 정상적으로 삭제되었습니다.";
+                return \json_encode(['code'=>'200','message'=>$msg]);
+            }
+            $msg = "CSRF 불일치";
+        }
+
+        return \json_encode(['code'=>'400','message'=>$msg]);
     }
 
-
+    /**
+     * id 유효성을 검사합니다.
+     */
     private function isID($id)
     {
         if($id) {
@@ -90,13 +104,14 @@ class TableDelete extends \Jiny\Board\State\Table
             }
         } else {
             $msg = "삭제할 id가 선택되지 안았습니다.";
-        }       
-
-        $error = new \Jiny\App\Error($msg);
-        return $error->main();
+        }        
+        return $msg; // 오류 메시지 반환
     }
 
-    private function byDelete($id)
+    /**
+     * 데이터베이스 작업을 실행합니다.
+     */
+    private function dataDelete($id)
     {
         $this->db->delete($this->table)->id($id);
         //echo "데이터 삭제완료";

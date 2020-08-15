@@ -44,19 +44,29 @@ class TableInsert extends \Jiny\Board\State\Table
         return $this->error($msg);
     }
 
-    public function POST($id)
+    /**
+     * application/json
+     * API 호출동작
+     */
+    public function POST($body)
     {
         if ($this->validate()) {
             $insert = $this->db->insert($this->table, $_POST['data']);
-            // echo 
             $insert->build()->getQuery();
             $insert->save();
 
-            \jiny\board\redirect($this->conf['uri']);
-        } 
-        
+            $msg = "데이터삽입 성공";
+            return \json_encode(
+                    ['code'=>'200','message'=>$msg],
+                    JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+                );
+        }
+
         $msg = "유효성 실패";
-        return $this->error($msg);
+        return \json_encode(
+                ['code'=>'400','message'=>$msg],
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+            );
     }
 
     // 유효성 검사

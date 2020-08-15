@@ -35,11 +35,7 @@ class TableView extends \Jiny\Board\State\Table
      */
     public function main($id)
     {
-        return $this->GET($id);
-    }
-
-    public function GET($id)
-    {
+        //echo "view 일반요청";
         if(is_numeric($id)) {
             if ($row = $this->read($id)) {
                 $this->builder($row);
@@ -52,6 +48,25 @@ class TableView extends \Jiny\Board\State\Table
         
         $error = new \Jiny\App\Error($msg);
         return $error->main();
+    }
+
+    public function GET($id)
+    {
+        //echo "view GET요청";
+        if(is_numeric($id)) {
+            if ($row = $this->read($id)) {
+                $this->builder($row);
+                return $this->resource(['data'=>$row]);
+            }
+            $msg = $id." 데이터를 읽어 처리할 수 없습니다.";
+        } else {
+            $msg = $id." 는 숫자로 입력되어야 합니다.";
+        }
+        
+        return \json_encode(
+            ['code'=>'400','message'=>$msg],
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+        );
     }
 
     /**

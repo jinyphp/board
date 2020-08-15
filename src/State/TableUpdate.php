@@ -30,15 +30,33 @@ class TableUpdate extends \Jiny\Board\State\Table
 
     public function main()
     {
-        return $this->post();
+        //echo __METHOD__;
+        // exit;
+        if (\jiny\board\csrf()->is()) {
+            \jiny\board\csrf()->clear();
+
+            $id = $this->id(); // id 선택값
+            $data = $this->formData();
+            $update = $this->db->update($this->table, $data)->id($id);
+            
+            // 성공후 페이지 리다이렉션
+            \jiny\board\redirect($this->conf['uri']);
+            return true;        
+        }
+
+        $msg = "update CSRF 불일치";
+        return $this->error($msg);
     }
 
     /**
      * post 처리루틴 "application/x-www-form-urlencoded"
      * 처리후 redirection
      */
-    public function post()
+    public function POST($body)
     {
+        //echo __METHOD__;
+        //exit;
+
         if ($this->put()) {
             // 성공후 페이지 리다이렉션
             \jiny\board\redirect($this->conf['uri']);
@@ -51,8 +69,9 @@ class TableUpdate extends \Jiny\Board\State\Table
      * application/json
      * 데이터를 갱신합니다.
      */
-    public function put()
+    public function PUT()
     {
+        // echo __METHOD__;
         if (\jiny\board\csrf()->is()) {
             \jiny\board\csrf()->clear();
 

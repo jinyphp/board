@@ -17,7 +17,6 @@ class Validate
     public function __construct($filter)
     {
         $this->_filter = $filter;
-        // print_r($this->_filter);
     }
 
     public function isPass()
@@ -27,11 +26,8 @@ class Validate
 
     public function filter($key, $value)
     {
-        //echo "필터 = $key, $value ";
         if (isset($this->_filter[$key])) {
-            // print_r($this->_filter[$key]);
             foreach ($this->_filter[$key] as $rule => $check) {
-                //echo "체크유형 = $rule, 형식 = $check ";
                 if (method_exists($this,$rule)) {
                     if (!$this->$rule($check, $value) ) {
                         //echo "체크실패";
@@ -42,7 +38,7 @@ class Validate
                 }
             }      
         }
-        //echo "<br>";
+        //
     }
 
     private function type($check, $value)

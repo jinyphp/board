@@ -37,7 +37,8 @@ class TableNew extends \Jiny\Board\State\Table
      */
     public function main()
     {
-        return $this->GET();
+        $this->builder(); // 폼양식 빌드
+        return $this->resource($vars=[]); // 화면 출력
     }
 
     // 신규삽입

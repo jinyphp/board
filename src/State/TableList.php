@@ -38,23 +38,24 @@ class TableList extends \Jiny\Board\State\Table
     private $total;
     public function main($limit=null)
     {
-        return $this->api($limit);
+        // 검색
+        //echo "일반요청";
+        $rows = $this->select($limit); // 데이터 조회
+        $this->builder($rows);
+
+        $vars = [
+            'total'=>$this->total
+        ];
+        return $this->resource($vars);
     }
 
+    /**
+     * application/json
+     * API GET 요청
+     */
     public function GET($limit=null)
     {
-        return $this->api($limit);
-    }
-
-    public function POST($limit=null)
-    {
-        return $this->api($limit);
-    }
-
-
-
-    public function api($limit=null)
-    {
+        //echo "GET 요청";
         // 검색
         $rows = $this->select($limit);
         $this->builder($rows);
