@@ -14,6 +14,8 @@ namespace Jiny\Board\State;
  */
 class TableView extends \Jiny\Board\State\Table
 {
+    use \Jiny\Board\PreFix; 
+
     private $db;
     private $parser;
     private $table;
@@ -78,9 +80,20 @@ class TableView extends \Jiny\Board\State\Table
      */
     private function resource($vars=[])
     {
-        $file = "..".$this->conf['view']['resource'];
+        $file = $this->resourcePath();
         $body = \jiny\html_get_contents($file, $vars);
+
+        $codes = $this->setPrefix("{{", "}}")->preFixs($body);
+        foreach ($codes as $key) {
+            $body = str_replace("{{".$key."}}", $vars['data'][$key], $body);
+        }
+
         return $body;
+    }
+
+    private function resourcePath()
+    {
+        return "..".$this->conf['view']['resource'];
     }
 
     /**
@@ -88,8 +101,18 @@ class TableView extends \Jiny\Board\State\Table
      */
     private function read($id)
     {
-        $fields = isset($this->conf['view']['fields']) ? $this->conf['view']['fields'] : [];
+        // 출력할 필드 선택
+        $fields = $this->setField();
         return $this->db->select($this->table, array_keys($fields))->id($id);
+    }
+
+    private function setField()
+    {
+        if (isset($this->conf['view']['fields'])) {
+            return $this->conf['view']['fields'];
+        }
+
+        return [];
     }
 
 }
