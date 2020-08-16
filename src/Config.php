@@ -9,11 +9,19 @@
  */
 namespace Jiny\Board;
 
-class Resource
+// 데이터객체
+class Config
 {
-    public function __construct()
+    private $conf;
+    public function __construct($conf)
     {
+        //echo __CLASS__;
+        $this->conf = $conf;
+    }
 
+    public function listFields()
+    {
+        // return $this->conf['list']['fields'];
     }
 
 

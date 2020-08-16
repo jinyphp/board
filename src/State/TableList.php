@@ -20,10 +20,16 @@ class TableList extends \Jiny\Board\State\Table
     private $conf;
     private $pagenation;
 
+    //private $_config;
+
     public function __construct($conf=null)
     {
+        //echo __CLASS__."<br>";
         $dbinfo = \jiny\dbinfo();
         $this->db = \jiny\mysql($dbinfo);
+
+        //$Config = new \Jiny\Board\Config($conf);
+        //$fields = $this->_config->listFields();
 
         if ($conf) $this->conf = $conf;
 
@@ -66,16 +72,38 @@ class TableList extends \Jiny\Board\State\Table
      */
     private function builder($rows)
     {
+        // HTML 테이블 빌더생성
         $html = \jiny\html\table($rows);
-
-        $fields = $this->conf['list']['fields'];
-        
+        $fields = $this->setTableFields($html);     
         $html->displayfield($fields)->theadTitle($fields);
+    }
 
-        // 연결링크
-        foreach ($this->conf['list']['href'] as $key => $value) {
-            $html->setHref($key, $value);
+
+    // 필드 정보만 가공추출
+    private function setTableFields($htmlTable)
+    {
+        $fields = [];
+        foreach ($this->conf['list']['fields'] as $key => $value)
+        {
+            if(is_string($value)) {
+                $fields[$key] = $value;
+            } else if(is_array($value)) {
+                $fields[$key] = $value['title'];
+                if(isset($value['width'])) $htmlTable->field_width[$key] = $value['width'];
+
+                // href 링크설정
+                if(isset($value['href'])) {
+                    $htmlTable->setHref($key, $value['href']);
+                }
+
+                // td attr 설정
+                if(isset($value['attr'])) {
+                    $htmlTable->field_attr[$key] = $value['attr'];
+                }
+
+            }
         }
+        return $fields;
     }
 
     /**
@@ -100,6 +128,8 @@ class TableList extends \Jiny\Board\State\Table
 
         return $body;
     }
+
+    
 
     /**
      * 데이터베이스 select
