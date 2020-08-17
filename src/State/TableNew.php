@@ -57,17 +57,27 @@ class TableNew extends \Jiny\Board\State\Table
     {
         $form = \jiny\html\form();
         $form->setAction($this->conf['uri']);
-        $form->hidden(['name'=>"mode", 'value'=>"newup" ]);
-        $form->hidden(['name'=>"csrf", 'value'=>\jiny\board\csrf()->new() ]);
+
+        // 공용요소
+        $form->fields [] = $form->hidden(['name'=>"mode", 'value'=>"newup" ]);
+        $form->fields [] = $form->hidden(['name'=>"csrf", 'value'=>\jiny\board\csrf()->new() ]);
         
-        // $form->text(['label'=>"이메일", 'name'=>"email", 'placeholder'=>"이메일을 입력해 주세요"]);
-        // $form->text(['label'=>"패스워드", 'name'=>"password", 'placeholder'=>"패스워드 입력"]);
-        foreach ($this->conf['new']['fields'] as $field) {
-            $type = $field['type'];
-            $form->$type($field);
+        // 폼 요소를 생성
+        $form->setFields( $this->conf['new']['fields'] );
+        /*
+        foreach ($this->conf['new']['fields'] as $id => $field) { 
+            foreach($field as $tag => $el) {
+                if(method_exists($form, $tag)) {
+                    $form->fields[$id][$tag] = $form->$tag($el, $id);
+                } else {
+                    $form->fields[$id][$tag]= $el;
+                }
+            }
         }
-        //$form->submit(['value'=>"등록", 'class'=>"btn btn-primary"]);
+        */
     }
+
+
 
     /**
      * 화면처리 리소스

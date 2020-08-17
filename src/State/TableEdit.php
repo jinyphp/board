@@ -79,10 +79,15 @@ class TableEdit extends \Jiny\Board\State\Table
     {
         $form = \jiny\html\form();
         $form->setAction($this->conf['uri']);
-        $form->hidden(['name'=>"mode", 'value'=>"editup"]);
-        $form->hidden(['name'=>"csrf", 'value'=>\jiny\board\csrf()->new() ]);
-        $form->hidden(['name'=>"id", 'value'=>$row['id'] ]);
+        // 공용요소
+        $form->fields [] = $form->hidden(['name'=>"mode", 'value'=>"editup"]);
+        $form->fields [] = $form->hidden(['name'=>"csrf", 'value'=>\jiny\board\csrf()->new() ]);
+        $form->fields [] = $form->hidden(['name'=>"id", 'value'=>$row['id'] ]);
 
+        // 폼 요소를 생성
+        $form->setFields( $this->conf['edit']['fields'], $row);
+
+        /*
         foreach ($this->conf['edit']['fields'] as $field) {
             $type = $field['type'];
             if (isset($field['name']) && $name = $field['name']) {
@@ -92,6 +97,7 @@ class TableEdit extends \Jiny\Board\State\Table
             }
             $form->$type($field);
         }
+        */
     }
 
     /**
