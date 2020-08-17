@@ -344,13 +344,184 @@ function setBtnBoard_submitPost()
         submit.addEventListener('click', function(e){
             e.preventDefault();
             // alert("클릭 json Post Submit");
+
+            if(!validate(form)) {
+                let msg = document.querySelector(".error-message");
+                // console.log(msg.classList);
+                msg.classList.add("alert");
+                msg.classList.add("alert-danger");
+
+                msg.textContent = "유효성을 통과할 수 없습니다.";             
+            }
+            return;            
+
             let obj = formObject(form);
             ajaxJsonPost(obj, function(data){
-                //console.log(data);
-                window.location.reload();
+                console.log(data);
+                let res = JSON.parse(data);
+                if(res.code == 400) {
+                    let msg = document.querySelector(".error-message");
+                    msg.textContent = res.message;
+                    msg.attributes("display","hidden");
+                   
+                }
+                
+                
+                // window.location.reload();
             });
         });
     }
+}
+
+
+function validate_require(element) {
+    if (element.attributes.required) {
+        //console.log("필수입력 =" + element.name);
+        if(!element.value) {
+            console.log(element.title + " 입력해 주세요.");
+            return false; // 유효성 실패
+        }
+    }
+    return true;
+}
+
+function validate_typeEmail(element) {
+    function validateEmail(email) 
+    {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    }
+
+    if(!validateEmail(element.value)) {
+        
+        console.log("유효한 이메일 주소가 아닙니다.");
+        let error = document.createElement("div");
+        error.textContent = "유효한 이메일 주소가 아닙니다. 정확한 이메일을 입력해 주세요.";
+        error.classList.add("alert");
+        error.classList.add("alert-danger");
+        element.appendChild(error);
+        return false; // 유효성 실패
+    } else {
+        console.log("정상적인 이메일 주소 입니다.");
+    }
+    return true;
+}
+
+function validate_minlength(element,k) {
+    if(element.value.length < element.dataset[k]) {
+        console.log(element.title + "는 최소 " + element.dataset[k] + "자 이상 입력을 해야 합니다.");
+        return false; // 유효성 실패
+    }
+    return true;
+}
+
+function validate_maxlength(element) {
+    console.log(element.attributes.maxlength);
+    if (element.attributes.maxlength) {
+        if(element.value.length > element.attributes.maxlength) {
+            console.log(element.title + "는 " + element.attributes.maxlength + "자 이상 입력할 수 없습니다.");
+            return false; // 유효성 실패
+        }
+    }
+    return true;
+}
+
+function validate_min(element) {
+    if (element.attributes.min) {
+        if(element.value.length > element.attributes.min) {
+            console.log(element.title + "는 " + element.attributes.min + "을 넘을 수 없습니다.");
+            return false; // 유효성 실패
+        }
+    }
+    return true;
+}
+
+function validate_min(element) {
+    console.log(element.attributes.min);
+    if (element.attributes.min) {
+        if(element.value.length > element.attributes.min) {
+            console.log(element.title + "는 최소" + element.attributes.min + " 이상 이어야 합니다.");
+            return false; // 유효성 실패
+        }
+    }
+    return true;
+}
+
+function validate_message(element, msg) {
+    element.style.border = "1px solid INDIANRED";
+
+    let errorMessage;
+    errorMessage = element.parentNode.querySelector("div.form-error");
+    if(errorMessage) {
+        // 기존 요소 사용
+        errorMessage.textContent = msg;
+    } else {
+        // 요소 생성추가
+        errorMessage = document.createElement("div");
+        errorMessage.classList.add("form-error");
+        element.parentNode.appendChild(errorMessage);
+    }
+    //errorMessage.style.display = "visible";
+
+    errorMessage.textContent = msg;
+    //errorMessage.classList.add("alert");
+    //errorMessage.classList.add("alert-danger");
+
+}
+
+function validate(form)
+{
+    //console.log(form);
+    var elements = form.elements;
+    var msg;
+    for(var i=0; i<elements.length; i++) {
+        if(elements[i].name.substring(0,5) == "data[") {
+            console.log(elements[i]);
+            
+            msg = "유효한 이메일 주소가 아닙니다. 정확한 이메일을 입력해 주세요.";
+            validate_message(elements[i], msg);
+
+            
+
+            
+ 
+
+
+            // 필수입력 검사
+            if(!validate_require(elements[i])) return false; 
+
+            // 타입검사
+            console.log(elements[i].type);
+            if(elements[i].type == "email") {
+                //console.log("이메일 타입입니다.");
+                if(!validate_typeEmail(elements[i])) return false; 
+
+            } else if (elements[i].type == "number") {
+                //console.log("숫자 타입입니다.");
+                if(!validate_min(elements[i])) return false; //html5 속성유효성
+                if(!validate_max(elements[i])) return false; //html5 속성유효성
+
+            } else if (elements[i].type == "password") {
+                //console.log("패스워드 타입입니다.");
+            } else if (elements[i].type == "text") {
+                //console.log("택스트 타입입니다.");
+                if(!validate_maxlength(elements[i])) return false; //html5 속성유효성
+
+            }
+
+            // data 검사
+            for(var k in elements[i].dataset )
+            {
+                if (k == "minlength") {
+                   if(!validate_minlength(elements[i], k)) return false; 
+                }
+            }
+            //
+        }
+        
+    }
+    
+    return true; // 성공
 }
 
 /**

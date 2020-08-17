@@ -74,9 +74,14 @@ class TableNew extends \Jiny\Board\State\Table
      */
     private function resource($vars=[])
     {
-        $file = "..".$this->conf['new']['resource'];
+        $file = $this->resourcePath();
         $body = \jiny\html_get_contents($file, $vars);
         return $body;
+    }
+
+    private function resourcePath()
+    {
+        return "..".$this->conf['new']['resource'];
     }
 
 
