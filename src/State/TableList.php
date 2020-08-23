@@ -21,15 +21,10 @@ class TableList extends \Jiny\Board\State\Table
     private $pagenation;
 
     //private $_config;
-
     public function __construct($conf=null)
     {
-        //echo __CLASS__."<br>";
         $dbinfo = \jiny\dbinfo();
         $this->db = \jiny\mysql($dbinfo);
-
-        //$Config = new \Jiny\Board\Config($conf);
-        //$fields = $this->_config->listFields();
 
         if ($conf) $this->conf = $conf;
 
@@ -74,14 +69,7 @@ class TableList extends \Jiny\Board\State\Table
     {
         // HTML 테이블 빌더생성
         $html = \jiny\html\table($rows);
-        $fields = $this->setTableFields($html);     
-        $html->displayfield($fields)->theadTitle($fields);
-    }
-
-
-    // 필드 정보만 가공추출
-    private function setTableFields($htmlTable)
-    {
+        //$fields = $this->setTableFields($html);
         $fields = [];
         foreach ($this->conf['list']['fields'] as $key => $value)
         {
@@ -89,22 +77,30 @@ class TableList extends \Jiny\Board\State\Table
                 $fields[$key] = $value;
             } else if(is_array($value)) {
                 $fields[$key] = $value['title'];
-                if(isset($value['width'])) $htmlTable->field_width[$key] = $value['width'];
+                if(isset($value['width'])) $html->field_width[$key] = $value['width'];
 
                 // href 링크설정
                 if(isset($value['href'])) {
-                    $htmlTable->setHref($key, $value['href']);
+                    $html->setHref($key, $value['href']);
                 }
 
                 // td attr 설정
                 if(isset($value['attr'])) {
-                    $htmlTable->field_attr[$key] = $value['attr'];
+                    $html->field_attr[$key] = $value['attr'];
                 }
 
             }
         }
-        return $fields;
+
+        
+        
+
+        $html->displayfield($fields)->theadTitle($fields);
     }
+
+
+
+
 
     /**
      * 화면처리 리소스
@@ -122,11 +118,18 @@ class TableList extends \Jiny\Board\State\Table
             $vars['title'] = $this->conf['list']['title'];
         }
         
-
-        $file = "..".$this->conf['list']['resource'];
+        $file = $this->resourcePath();
         $body = \jiny\html_get_contents($file, $vars);
 
         return $body;
+    }
+
+    private function resourcePath()
+    {
+        if(isset($this->conf['list']['resource'])) {
+            return "..".$this->conf['list']['resource'];
+        }
+        return "../vendor/jiny/board/resource/list.html";
     }
 
     

@@ -87,17 +87,7 @@ class TableEdit extends \Jiny\Board\State\Table
         // 폼 요소를 생성
         $form->setFields( $this->conf['edit']['fields'], $row);
 
-        /*
-        foreach ($this->conf['edit']['fields'] as $field) {
-            $type = $field['type'];
-            if (isset($field['name']) && $name = $field['name']) {
-                if(isset($row[$name]) && !empty($row[$name])) {
-                    $field['value'] = $row[$name];
-                }
-            }
-            $form->$type($field);
-        }
-        */
+
     }
 
     /**
@@ -105,9 +95,21 @@ class TableEdit extends \Jiny\Board\State\Table
      */
     private function resource($vars=[])
     {
-        $file = "..".$this->conf['edit']['resource'];
+        if(isset($this->conf['edit']['title'])) {
+            $vars['title'] = $this->conf['edit']['title'];
+        }
+
+        $file = $this->resourcePath();
         $body = \jiny\html_get_contents($file, $vars);
         return $body;
+    }
+
+    private function resourcePath()
+    {
+        if(isset($this->conf['edit']['resource'])) {
+            return "..".$this->conf['edit']['resource'];
+        }
+        return "../vendor/jiny/board/resource/edit.html";
     }
 
     /**

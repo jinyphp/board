@@ -19,7 +19,8 @@ class TableView extends \Jiny\Board\State\Table
     private $db;
     private $parser;
     private $table;
-    private $conf;
+    // private $conf;
+    use \Jiny\Board\Config;
 
     public function __construct($conf=null)
     {
@@ -29,6 +30,9 @@ class TableView extends \Jiny\Board\State\Table
         if ($conf) $this->conf = $conf;
         $this->table = $conf['table']; // 테이블명 설정"members";
         $this->csrf = "hello";
+
+        //print_r($conf);
+        //exit;
     }
 
     /**
@@ -49,6 +53,9 @@ class TableView extends \Jiny\Board\State\Table
         return $this->error($msg);
     }
 
+    /**
+     * GET 요청
+     */
     public function GET($id)
     {
         if(is_numeric($id)) {
@@ -57,6 +64,7 @@ class TableView extends \Jiny\Board\State\Table
                 return $this->resource(['data'=>$row]);
             }
             $msg = $id." 데이터를 읽어 처리할 수 없습니다.";
+
         } else {
             $msg = $id." 는 숫자로 입력되어야 합니다.";
         }
@@ -80,20 +88,30 @@ class TableView extends \Jiny\Board\State\Table
      */
     private function resource($vars=[])
     {
+        if(isset($this->conf['view']['title'])) {
+            $vars['title'] = $this->conf['view']['title'];
+        }
+
         $file = $this->resourcePath();
         $body = \jiny\html_get_contents($file, $vars);
 
         $codes = $this->setPrefix("{{", "}}")->preFixs($body);
-        foreach ($codes as $key) {
-            $body = str_replace("{{".$key."}}", $vars['data'][$key], $body);
-        }
+        if (\is_array($codes)) {
+            foreach ($codes as $key) {
+                $body = str_replace("{{".$key."}}", $vars['data'][$key], $body);
+            }
+        }        
 
         return $body;
     }
 
     private function resourcePath()
     {
-        return "..".$this->conf['view']['resource'];
+        if (isset($this->conf['view']['resource'])) {
+            return "..".$this->conf['view']['resource'];
+        }
+
+        return "../vendor/jiny/board/resource/view.html";        
     }
 
     /**

@@ -14,22 +14,7 @@ namespace Jiny\Board;
  */
 class State
 {
-    // protected $scriptfile = "../resource/board/board.js";
-    protected $scriptfile = "../vendor/jiny/board/src/board.js";
-
-    /**
-     * 계시판 
-     * 자바스크립트 코드 삽입.
-     */
-    protected function javascript()
-    {
-        // 로직에서 생성된값 적용
-        $vars['csrf'] = \jiny\board\csrf()->get();
-
-        // 스크립트 파일 읽기
-        $javascript = \jiny\html_get_contents($this->scriptfile, $vars);
-        return  \jiny\javascript($javascript);
-    }
+    
 
     /**
      * 검색처리
@@ -63,6 +48,7 @@ class State
             //echo "경로설정";
             \jiny\cookie("current", $this->conf['uri']);
             \jiny\cookieClears("limit","search","type");
+            //echo "쿠키초기화";
         } else 
         // 페이지 이동시, 쿠기 초기화
         {
@@ -70,6 +56,7 @@ class State
                 //echo "경로 초기화";
                 \jiny\cookie("current", $this->conf['uri']);
                 \jiny\cookieClears("limit","search","type");
+                //echo "쿠키초기화";
             }
         }
         
@@ -148,7 +135,8 @@ class State
         if($contenttype == "application/json") {
             $method = \jiny\http\request()->method();
             if(\method_exists($stateObj, $method)) {
-                $limit = $this->limit($_SERVER['HTTP_LIMIT']);
+                if(isset($_SERVER['HTTP_LIMIT'])) $limit = $_SERVER['HTTP_LIMIT'];
+                $limit = $this->limit($limit);
                 return $stateObj->$method($limit);
             }
         }
@@ -159,8 +147,13 @@ class State
 
     public function view($id=null)
     {
+        //echo "api get 호출";
+        //echo "view를 호출합니다.";
+        //print_r($this->conf);
+        //exit;
         $stateObj = $this->factory("TableView");
-        $contenttype = $this->http->Request->contentType();
+
+        $contenttype = \jiny\http\request()->contentType();
         if($contenttype == "application/json") {
             $method = \jiny\http\request()->method();
             if(\method_exists($stateObj, $method)) {

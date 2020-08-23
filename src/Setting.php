@@ -9,19 +9,16 @@
  */
 namespace Jiny\Board;
 
-/**
- * 테이블의 목록을 출력합니다.
- */
-class Setting
+trait Setting
 {
-    public function __construct()
+    private function setting()
     {
-        echo __CLASS__;
+        //$body = json_encode($this->conf, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        //$body = nl2br($body);
+        $body = "";
+        foreach($this->conf as $key => $value) {
+            $body .= $key."<br>";
+        }
+        return $body;
     }
-
-    public function main()
-    {
-        
-    }
-
 }

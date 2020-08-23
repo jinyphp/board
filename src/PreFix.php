@@ -35,6 +35,7 @@ trait PreFix
         $end_count = strlen($endfix);
 
         $overflow = false;
+        $rows = [];
 
         // $j = 배열의 갯수
         for($pos=0, $j=0, $i=0; $i<$count; $i++){

@@ -1,0 +1,18 @@
+<!--계시글 보기 화면-->
+<div class="container-fluid">
+    <h1 class="mt-4"><?= $title ?></h1>
+    <hr class="my-4">
+    
+    <?php
+        foreach ($data as $key => $value) {
+            echo "<div class='row'>";
+            echo "<div class='col-2'>".$key."</div>";
+            echo "<div class='col-10'>".$value."</div>";
+            echo "</div>";
+        }
+    ?>
+
+    <div class="text-right">
+        <button class="btn btn-primary" id="btn-board-list">목록출력</button>
+    </div>
+</div>  

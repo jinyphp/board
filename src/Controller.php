@@ -14,39 +14,42 @@ namespace Jiny\Board;
  */
 class Controller extends State
 {
-    protected $conf;
+    use Config; // 설정관련 기능들
+    use Javascript;
+    use Setting;
+
     protected $http;
 
-    public function init()
+    public function __construct($path=null)
     {
+        $this->init($path);
+    }
+
+    public function init($path=null)
+    {
+        
         $this->http = \jiny\http();
         $this->cookieInit();
+        $this->confLoad($path);
         return $this;
     }
 
-    /**
-     * 상태처리 설정파일
-     */
-    public function setConf($conf)
-    {
-        $this->conf = $conf;
-    }
-
-    public function setEnv($path)
-    {
-        $this->conf =  \json_decode(\file_get_contents($path), true);
-    }
-
+    
     /**
      * 동작 메서드 호출
      */
     public function main($params=[])
     {
         $method = $this->http->Request->method();
-        $this->request_method = $method;
         $body = "<div id='jiny-board'>".$this->$method($params)."</div>";
 
-        $body .= $this->javascript(); // 자바스크립트 코드 추가            
+        
+        $contenttype = \jiny\http\request()->contentType();
+        if($contenttype != "application/json") {
+            // trait : 자바스크립트 코드 추가
+            $body .= $this->javascript();  
+        }
+                   
         return $body;
     }
 
@@ -55,10 +58,14 @@ class Controller extends State
      */
     public function GET($params=[], $body=null)
     {
-        $contenttype = $this->http->Request->contentType();
+        $contenttype = \jiny\http\request()->contentType();
         if($contenttype == "application/json") {
+            //print_r($this->conf);
+            //exit;
+
             if(isset($_SERVER['HTTP_MODE'])) {
                 $method = \strtolower($_SERVER['HTTP_MODE']);
+                
                 return $this->$method();
             } else {
                 $msg = "api 동작모드가 설정되어 있지 않습니다.";
@@ -84,6 +91,9 @@ class Controller extends State
             // 신규입력 페이지, ~~/new
             if($id == "new") {
                 return $this->new();
+            } else 
+            if($id == "setting") {
+                return $this->setting();
             } else 
             // 목록 요청 페이지
             {
@@ -113,8 +123,12 @@ class Controller extends State
      */
     public function PUT($params=[], $body=null)
     {
+        //echo "put 요청";
         if(isset($_POST['mode'])) {
             $method = \strtolower($_POST['mode']);
+            // print_r($this->conf);
+            //exit;
+
             return $this->$method($param);
         }
     }

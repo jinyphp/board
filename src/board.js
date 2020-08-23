@@ -126,6 +126,8 @@ function btnBoardView(id)
 {   
     history.pushState("view/"+id,null,document.location.href); // back 버튼용 저장
 
+    //alert(document.location.href);
+
     $.ajax({
         uri: document.location.href,
         type:"get",
@@ -307,6 +309,16 @@ function setBtnBoard_submit()
         submit.addEventListener('click', function(e){
             e.preventDefault();
             // alert("클릭 post Submit");
+
+            if(!validate(form)) {
+                let msg = document.querySelector(".error-message");
+                msg.classList.add("alert");
+                msg.classList.add("alert-danger");
+
+                msg.textContent = "입력하신 정보가 정확하지 않습니다.";   
+                return;          
+            }
+            
             form.submit();
         });
     }
@@ -331,7 +343,7 @@ function setBtnBoard_submitPut()
                 msg.textContent = "입력하신 정보가 정확하지 않습니다.";   
                 return;          
             } 
-            
+
             let obj = formObject(form);
             ajaxJsonPut(obj, function(data){
                 //console.log(data);
@@ -354,6 +366,7 @@ function setBtnBoard_submitPost()
             e.preventDefault();
             // alert("클릭 json Post Submit");
 
+            
             if(!validate(form)) {
                 let msg = document.querySelector(".error-message");
                 msg.classList.add("alert");
@@ -361,7 +374,8 @@ function setBtnBoard_submitPost()
 
                 msg.textContent = "입력하신 정보가 정확하지 않습니다.";   
                 return;          
-            }                        
+            }
+                                 
 
             let obj = formObject(form);
             ajaxJsonPost(obj, function(data){

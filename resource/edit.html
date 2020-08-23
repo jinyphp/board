@@ -1,0 +1,17 @@
+<div class="container-fluid">
+    <h1 class="mt-4"><?= $title ?></h1>
+    <hr>
+
+    <div style="max-width:800px;">
+        <?= \jiny\html\form\build(); ?>
+
+        <div class="text-right">
+            <button class="btn btn-primary" id="btn-board-listlink">목록이동</button>
+            <button class="btn btn-primary" id="btn-board-list">목록출력</button>
+        </div>
+
+        <br>
+        <button class="btn btn-danger" id="btn-board-delete">DELETE 삭제</button>
+        <button class="btn btn-danger" id="btn-board-delete-post">POST 삭제</button>
+    </div>    
+</div>

@@ -31,7 +31,7 @@ class TableInsert extends \Jiny\Board\State\Table
     public function main()
     {
         if ($this->validate()) {
-            $insert = $this->db->insert($this->table, $_POST['data']);
+            $insert = $this->db->insert($this->table, $_POST['data'])->autoField();
             $insert->build()->getQuery();
             $insert->save();
 
@@ -49,8 +49,10 @@ class TableInsert extends \Jiny\Board\State\Table
     public function POST($body)
     {
         if ($this->validate()) {
-            $insert = $this->db->insert($this->table, $_POST['data']);
-            $insert->build()->getQuery();
+            $insert = $this->db->insert($this->table, $_POST['data'])->autoField();
+            $query = $insert->build()->getQuery();
+            //echo $query;
+            // exit;
             $insert->save();
 
             $msg = "데이터삽입 성공";
@@ -70,11 +72,8 @@ class TableInsert extends \Jiny\Board\State\Table
     // 유효성 검사
     private function validate()
     {
-        $validate = new \Jiny\Board\Validate($this->conf['new']['validate']);
-        foreach($_POST['data'] as $key => $value) {
-            $validate->filter($key, $value);
-        }
-
+        $validate = new \Jiny\Board\Validate($this->conf['new']['fields']);
+        $validate->rules()->filter($_POST['data']);
         return $validate->isPass();
     }
 

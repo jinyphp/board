@@ -64,17 +64,7 @@ class TableNew extends \Jiny\Board\State\Table
         
         // 폼 요소를 생성
         $form->setFields( $this->conf['new']['fields'] );
-        /*
-        foreach ($this->conf['new']['fields'] as $id => $field) { 
-            foreach($field as $tag => $el) {
-                if(method_exists($form, $tag)) {
-                    $form->fields[$id][$tag] = $form->$tag($el, $id);
-                } else {
-                    $form->fields[$id][$tag]= $el;
-                }
-            }
-        }
-        */
+
     }
 
 
@@ -84,6 +74,10 @@ class TableNew extends \Jiny\Board\State\Table
      */
     private function resource($vars=[])
     {
+        if(isset($this->conf['new']['title'])) {
+            $vars['title'] = $this->conf['new']['title'];
+        }
+        
         $file = $this->resourcePath();
         $body = \jiny\html_get_contents($file, $vars);
         return $body;
@@ -91,7 +85,11 @@ class TableNew extends \Jiny\Board\State\Table
 
     private function resourcePath()
     {
-        return "..".$this->conf['new']['resource'];
+        if (isset($this->conf['new']['resource'])) {
+            return "..".$this->conf['new']['resource'];
+        }
+
+        return "../vendor/jiny/board/resource/new.html";
     }
 
 

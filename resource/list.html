@@ -1,0 +1,41 @@
+<!--계시판 리스트 화면-->
+<div class="container-fluid">
+    <h1 class="mt-4"><?= $title ?></h1> <i class="fas fa-tools"></i>
+    <hr>
+
+    <div class="row">
+        <div class="col">
+            <i class="fas fa-table mr-1"></i>
+            Total : <?= $total; ?>
+        </div>
+        <div class="col">
+            <!--검색폼-->
+            <div class="text-right">
+                <form action="/admin/members" method="POST" class="form-inline float-sm-right">
+                    <input type="hidden" name="field" value="<?= $field; ?>">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <label for="searching" class="sr-only">검색</label>
+                        <input type="text" name="search" value="<?= $search; ?>" class="form-control" id="searching" placeholder="search">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">검색</button>
+                </form>
+            </div>           
+        </div>
+    </div>
+    
+    <!--리스트목록/Table Builder 헬퍼함수-->
+    <!--매개변수로, 부트스트랩 클래스 타입 전달-->
+    <!--  -->
+    <div class="row">
+        <div class="col" id="board-list">
+            <?= \jiny\html\table\build(['class'=>"table table-bordered"]); ?>    
+            <!--페이지네이션-->
+            <?= \jiny\board\pagenation\build(); ?>
+        </div>
+    </div>
+    
+    <div class="text-right">
+        <button class="btn btn-primary" id="btn-board-new">삽입</button>
+    </div>
+
+</div>

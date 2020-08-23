@@ -1,0 +1,17 @@
+<div class="container-fluid">
+    <h1 class="mt-4"><?= $title ?></h1>
+    <hr class="mt-4 mb-4">
+
+    <div style="max-width:800px;">
+        <div class="error-message" role="alert">
+        </div>
+    
+        <!--컨드롤러에서 생성한 폼을 빌드출력-->
+        <?= \jiny\html\form\build(); ?>
+    
+        <div class="text-center">
+            <button class="btn btn-primary" id="btn-board-list">목록출력</button>
+        </div>
+    </div>   
+
+</div>
